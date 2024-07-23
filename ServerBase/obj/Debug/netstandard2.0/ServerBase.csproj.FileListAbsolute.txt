@@ -1,0 +1,11 @@
+E:\C#Projects\SimpleServer\ServerBase\bin\Debug\netstandard2.0\ServerBase.deps.json
+E:\C#Projects\SimpleServer\ServerBase\bin\Debug\netstandard2.0\ServerBase.dll
+E:\C#Projects\SimpleServer\ServerBase\bin\Debug\netstandard2.0\ServerBase.pdb
+E:\C#Projects\SimpleServer\ServerBase\obj\Debug\netstandard2.0\ServerBase.csproj.AssemblyReference.cache
+E:\C#Projects\SimpleServer\ServerBase\obj\Debug\netstandard2.0\ServerBase.GeneratedMSBuildEditorConfig.editorconfig
+E:\C#Projects\SimpleServer\ServerBase\obj\Debug\netstandard2.0\ServerBase.AssemblyInfoInputs.cache
+E:\C#Projects\SimpleServer\ServerBase\obj\Debug\netstandard2.0\ServerBase.AssemblyInfo.cs
+E:\C#Projects\SimpleServer\ServerBase\obj\Debug\netstandard2.0\ServerBase.csproj.CoreCompileInputs.cache
+E:\C#Projects\SimpleServer\ServerBase\obj\Debug\netstandard2.0\ServerBase.sourcelink.json
+E:\C#Projects\SimpleServer\ServerBase\obj\Debug\netstandard2.0\ServerBase.dll
+E:\C#Projects\SimpleServer\ServerBase\obj\Debug\netstandard2.0\ServerBase.pdb

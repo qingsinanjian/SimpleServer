@@ -1,0 +1,5 @@
+is_global = true
+build_property.RootNamespace = ServerBase
+build_property.ProjectDir = E:\C#Projects\SimpleServer\ServerBase\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
