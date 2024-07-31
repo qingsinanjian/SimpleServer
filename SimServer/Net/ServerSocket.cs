@@ -21,8 +21,11 @@ namespace SimServer.Net
         //服务器监听Socket
         private static Socket m_ListenSocket;
 
-        //客户端Socket集合
+        //临时保存所有Socket的集合
         private static List<Socket> m_CheckReadList = new List<Socket>();
+
+        //所有客户端的一个字典
+        public static Dictionary<Socket, ClientSocket> m_ClientDic = new Dictionary<Socket, ClientSocket>();
 
         public void Init()
         {
@@ -30,6 +33,89 @@ namespace SimServer.Net
             IPEndPoint ipEndPoint = new IPEndPoint(ip, m_Port);
             m_ListenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             m_ListenSocket.Bind(ipEndPoint);
+            m_ListenSocket.Listen(50000);
+
+            Debug.LogInfo("服务器启动监听{0}成功", m_ListenSocket.LocalEndPoint.ToString());
+
+            while (true)
+            {
+                //检查是否有读取的Socket
+
+                //处理找出所有socket
+                ResetCheckRead();
+
+                try
+                {
+                    Socket.Select(m_CheckReadList, null, null, 1000);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                }
+
+                for (int i = m_CheckReadList.Count - 1; i >= 0; i--)
+                {
+                    Socket s = m_CheckReadList[i];
+                    if(s == m_ListenSocket)
+                    {
+                        //说明有客户端链接到服务器了，所以服务器socket可读
+                        ReadListen(s);
+                    }
+                    else
+                    {
+                        //说明链接的客户端可读。证明有信息传上来了
+                        ReadClient(s);
+                    }
+                }
+
+                //检测是否心跳包是否超时的计算
+            }
+        }
+
+        public void ResetCheckRead()
+        {
+            m_CheckReadList.Clear();
+            m_CheckReadList.Add(m_ListenSocket);
+            foreach (Socket s in m_ClientDic.Keys)
+            {
+                m_CheckReadList.Add(s);
+            }
+        }
+
+        void ReadListen(Socket listen)
+        {
+            try
+            {
+                Socket client = listen.Accept();
+                ClientSocket clientSocket = new ClientSocket();
+                clientSocket.Socket = client;
+                clientSocket.LastPingTime = GetTimeStamp();
+                m_ClientDic.Add(client, clientSocket);
+                Debug.Log("一个客户端链接：{0}，当前{1}个客户端在线！", client.LocalEndPoint.ToString(), m_ClientDic.Count);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("Accept fail:" + ex.ToString());
+            }
+        }
+
+        void ReadClient(Socket client)
+        {
+            ClientSocket clientSocket = m_ClientDic[client];
+            //接收信息，根据信息解析协议，根据协议内容处理消息再下发到客户端
+        }
+
+        public void CloseClient(ClientSocket client)
+        {
+            client.Socket.Close();
+            m_ClientDic.Remove(client.Socket);
+            Debug.Log("一个客户端断开链接，当前总链接数：{0}", m_ClientDic.Count);
+        }
+
+        public static long GetTimeStamp()
+        {
+            TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            return Convert.ToInt64(ts.TotalSeconds);
         }
     }
 }

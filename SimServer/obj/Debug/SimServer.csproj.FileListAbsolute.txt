@@ -1,10 +1,14 @@
 E:\C#Projects\SimpleServer\SimServer\bin\Debug\SimServer.exe.config
 E:\C#Projects\SimpleServer\SimServer\bin\Debug\SimServer.exe
 E:\C#Projects\SimpleServer\SimServer\bin\Debug\SimServer.pdb
-E:\C#Projects\SimpleServer\SimServer\bin\Debug\ServerBase.dll
-E:\C#Projects\SimpleServer\SimServer\bin\Debug\ServerBase.pdb
 E:\C#Projects\SimpleServer\SimServer\obj\Debug\SimServer.csproj.AssemblyReference.cache
 E:\C#Projects\SimpleServer\SimServer\obj\Debug\SimServer.csproj.CoreCompileInputs.cache
 E:\C#Projects\SimpleServer\SimServer\obj\Debug\SimServer.csproj.Up2Date
 E:\C#Projects\SimpleServer\SimServer\obj\Debug\SimServer.exe
 E:\C#Projects\SimpleServer\SimServer\obj\Debug\SimServer.pdb
+E:\C#Projects\SimpleServer\SimServer\bin\Debug\SerBase.exe
+E:\C#Projects\SimpleServer\SimServer\bin\Debug\log4net.dll
+E:\C#Projects\SimpleServer\SimServer\bin\Debug\SerBase.pdb
+E:\C#Projects\SimpleServer\SimServer\bin\Debug\SerBase.exe.config
+E:\C#Projects\SimpleServer\SimServer\bin\Debug\log4net.xml
+E:\C#Projects\SimpleServer\SimServer\bin\Debug\log4net.config

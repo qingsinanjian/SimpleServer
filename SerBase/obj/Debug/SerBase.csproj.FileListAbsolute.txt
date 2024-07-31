@@ -1,0 +1,11 @@
+E:\C#Projects\SimpleServer\SerBase\obj\Debug\SerBase.csproj.AssemblyReference.cache
+E:\C#Projects\SimpleServer\SerBase\obj\Debug\SerBase.csproj.CoreCompileInputs.cache
+E:\C#Projects\SimpleServer\SerBase\bin\Debug\SerBase.exe.config
+E:\C#Projects\SimpleServer\SerBase\bin\Debug\SerBase.exe
+E:\C#Projects\SimpleServer\SerBase\bin\Debug\SerBase.pdb
+E:\C#Projects\SimpleServer\SerBase\bin\Debug\log4net.dll
+E:\C#Projects\SimpleServer\SerBase\bin\Debug\log4net.xml
+E:\C#Projects\SimpleServer\SerBase\obj\Debug\SerBase.csproj.Up2Date
+E:\C#Projects\SimpleServer\SerBase\obj\Debug\SerBase.exe
+E:\C#Projects\SimpleServer\SerBase\obj\Debug\SerBase.pdb
+E:\C#Projects\SimpleServer\SerBase\bin\Debug\log4net.config
