@@ -18,6 +18,9 @@ namespace SimServer.Net
         private string m_IpStr = "172.45.756.54";
 #endif
         private const int m_Port = 8011;
+
+        public static long m_PingInterval = 30;
+
         //服务器监听Socket
         private static Socket m_ListenSocket;
 
@@ -26,6 +29,8 @@ namespace SimServer.Net
 
         //所有客户端的一个字典
         public static Dictionary<Socket, ClientSocket> m_ClientDic = new Dictionary<Socket, ClientSocket>();
+
+        public static List<ClientSocket> m_TempList = new List<ClientSocket>();
 
         public void Init()
         {
@@ -69,6 +74,22 @@ namespace SimServer.Net
                 }
 
                 //检测是否心跳包是否超时的计算
+                long timeNow = GetTimeStamp();
+                m_TempList.Clear();
+                foreach (ClientSocket clientSocket in m_ClientDic.Values)
+                {
+                    if(timeNow - clientSocket.LastPingTime > m_PingInterval * 4)
+                    {
+                        Debug.Log("Ping Close " + clientSocket.Socket.RemoteEndPoint.ToString());
+                        m_TempList.Add(clientSocket);
+                    }
+                }
+
+                foreach (ClientSocket clientSocket in m_TempList)
+                {
+                    CloseClient(clientSocket);
+                }
+                m_TempList.Clear();
             }
         }
 
