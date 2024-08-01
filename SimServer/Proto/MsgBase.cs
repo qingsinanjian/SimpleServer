@@ -33,7 +33,7 @@ public class MsgBase
     /// </summary>
     /// <param name="msgBase"></param>
     /// <returns></returns>
-    public static byte[] Encond(MsgBase msgBase)
+    public static byte[] Encode(MsgBase msgBase)
     {
         using(var memory = new MemoryStream())
         {
@@ -48,6 +48,45 @@ public class MsgBase
             }
             bytes = AES.AESEncrypt(bytes, secret);
             return bytes;
+        }
+    }
+
+    /// <summary>
+    /// 协议解密
+    /// </summary>
+    /// <param name="protocol"></param>
+    /// <param name="bytes"></param>
+    /// <param name="offset"></param>
+    /// <param name="count"></param>
+    /// <returns></returns>
+    public static MsgBase Decode(ProtocolEnum protocol, byte[] bytes, int offset, int count)
+    {
+        if(count <= 0)
+        {
+            Debug.LogError("协议解密出错，数据长度为0");
+            return null;
+        }
+
+        try
+        {
+            byte[] newBytes = new byte[count];
+            Array.Copy(bytes, offset, newBytes, 0, count);
+            string secret = ServerSocket.SecretKey;
+            if(protocol == ProtocolEnum.MsgSecret)
+            {
+                secret = ServerSocket.PublicKey;
+            }
+            newBytes = AES.AESDecrypt(newBytes, secret);
+            using(var memory = new MemoryStream(newBytes, 0, newBytes.Length))
+            {
+                Type t = System.Type.GetType(protocol.ToString());
+                return (MsgBase)Serializer.NonGeneric.Deserialize(t, memory);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("协议解密出错:" + ex.ToString());
+            return null;
         }
     }
 }
