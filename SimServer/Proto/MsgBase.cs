@@ -15,7 +15,14 @@ public class MsgBase
     /// <returns></returns>
     public static byte[] EncodeName(MsgBase msgBase)
     {
-
+        byte[] nameBytes = System.Text.Encoding.UTF8.GetBytes(msgBase.ProtoType.ToString());
+        Int16 len = (Int16)nameBytes.Length;
+        byte[] bytes = new byte[2 + len];
+        //用前2位储存数组长度
+        bytes[0] = (byte)(len % 256);
+        bytes[1] = (byte)(len / 256);
+        Array.Copy(nameBytes, 0, bytes, 2, len);
+        return bytes;
     }
 
     /// <summary>
@@ -23,9 +30,23 @@ public class MsgBase
     /// </summary>
     /// <param name="bytes"></param>
     /// <returns></returns>
-    public static ProtocolEnum DecodeName(byte[] bytes)
+    public static ProtocolEnum DecodeName(byte[] bytes, int offset, out int count)
     {
-
+        count = 0;
+        if (offset + 2 > bytes.Length) return ProtocolEnum.None;
+        Int16 len = (Int16)((bytes[offset + 1] << 8) | bytes[offset]);
+        if (offset + 2 + len > bytes.Length) return ProtocolEnum.None;
+        count = 2 + len;
+        try
+        {
+            string name = System.Text.Encoding.UTF8.GetString(bytes, offset + 2, len);
+            return (ProtocolEnum)System.Enum.Parse(typeof(ProtocolEnum), name);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("不存在的协议:" + ex.ToString());
+            return ProtocolEnum.None;
+        }
     }
 
     /// <summary>
