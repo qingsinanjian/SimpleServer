@@ -123,7 +123,50 @@ namespace SimServer.Net
         void ReadClient(Socket client)
         {
             ClientSocket clientSocket = m_ClientDic[client];
+            ByteArray readBuff = clientSocket.ReadBuff;
             //接收信息，根据信息解析协议，根据协议内容处理消息再下发到客户端
+            int count = 0;
+            //如果上一次接收数据刚好占满了1024的数组
+            if(readBuff.Remain <= 0)
+            {
+                //数据移动到index = 0的位置
+                OnReceiveData(clientSocket);
+                readBuff.CheckAndMoveBytes();
+                //保证到如果数据长度大于默认长度，扩充数据长度，保证信息的正常接收
+                while(readBuff.Remain <= 0)
+                {
+                    int expandSize = readBuff.Length < ByteArray.DEFAULT_SIZE ? ByteArray.DEFAULT_SIZE : readBuff.Length;
+                    readBuff.ReSize(expandSize * 2);
+                }
+            }
+            try
+            {
+                count = client.Receive(readBuff.Bytes, readBuff.WriteIdx, readBuff.Remain, 0);
+            }
+            catch (SocketException ex)
+            {
+                Debug.LogError("Receive fali:" + ex);
+                CloseClient(clientSocket);
+                return;
+            }
+
+            if(count <= 0)
+            {
+                CloseClient(clientSocket);
+                return;
+            }
+
+            readBuff.WriteIdx += count;
+            //解析我们的信息
+            OnReceiveData(clientSocket);
+            readBuff.CheckAndMoveBytes();
+        }
+
+        void OnReceiveData(ClientSocket clientSocket)
+        {
+
+            //如果信息长度不够，我们需要再次读取信息
+            //OnReceiveData(clientSocket);
         }
 
         public void CloseClient(ClientSocket client)

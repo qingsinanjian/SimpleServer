@@ -1,0 +1,77 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace SimServer.Net
+{
+    public class ByteArray
+    {
+        //默认大小
+        public const int DEFAULT_SIZE = 1024;
+        //初始大小
+        private int m_InitSize = 0;
+        //缓冲区
+        public byte[] Bytes;
+        //读写位置
+        public int ReadIdx = 0;
+        public int WriteIdx = 0;
+        //容量
+        public int Capacity = 0;
+
+        //剩余空间
+        public int Remain { get { return Capacity - WriteIdx; } }
+
+        //数据长度
+        public int Length { get { return WriteIdx - ReadIdx; } }
+
+        public ByteArray()
+        {
+            Bytes = new byte[DEFAULT_SIZE];
+            Capacity = DEFAULT_SIZE;
+            m_InitSize = DEFAULT_SIZE;
+            ReadIdx = 0;
+            WriteIdx = 0;
+        }
+
+        /// <summary>
+        /// 检测并移动数据
+        /// </summary>
+        public void CheckAndMoveBytes()
+        {
+            if(Length < 8)
+            {
+                MoveBytes();
+            }
+        }
+
+        public void MoveBytes()
+        {
+            if(ReadIdx < 0)
+            {
+                return;
+            }
+
+            Array.Copy(Bytes, ReadIdx, Bytes, 0, Length);
+            WriteIdx = Length;
+            ReadIdx = 0;
+        }
+
+        /// <summary>
+        /// 重设尺寸
+        /// </summary>
+        /// <param name="size"></param>
+        public void ReSize(int size)
+        {
+            if (ReadIdx < 0) return;
+            if (size < Length) return;
+            if (size < m_InitSize) return;
+            int n = 1024;
+            while (n < size) n *= 2;
+            Capacity = n;
+            byte[] newBytes = new byte[Capacity];
+            Array.Copy(Bytes, ReadIdx, newBytes, 0, Length);
+            Bytes = newBytes;
+            WriteIdx = Length;
+            ReadIdx = 0;
+        }
+    }
+}
