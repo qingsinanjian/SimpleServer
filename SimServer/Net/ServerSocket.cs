@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 
 namespace SimServer.Net
 {
@@ -229,9 +230,19 @@ namespace SimServer.Net
             readBuff.ReadIdx += bodyCount;
             readBuff.CheckAndMoveBytes();
             //分发消息
+            MethodInfo mi = typeof(MsgHandler).GetMethod(proto.ToString());
+            object[] o = { clientSocket, msgBase };
+            if(mi != null)
+            {
+                mi.Invoke(null, o);
+            }
+            else
+            {
+                Debug.LogError("OnReceiveData Invoke fail:" + proto.ToString());
+            }
 
             //继续读取消息
-            if(readBuff.Length > 4)
+            if (readBuff.Length > 4)
             {
                 OnReceiveData(clientSocket);
             }
