@@ -162,13 +162,49 @@ namespace SimServer.Net
             readBuff.CheckAndMoveBytes();
         }
 
+        /// <summary>
+        /// 接收数据处理
+        /// </summary>
+        /// <param name="clientSocket"></param>
         void OnReceiveData(ClientSocket clientSocket)
         {
-
+            ByteArray readBuff = clientSocket.ReadBuff;
+            //基本消息长度判断
+            if(readBuff.Length <= 4 || readBuff.ReadIdx < 0)
+            {
+                return;
+            }
+            int readIdx = readBuff.ReadIdx;
+            byte[] bytes = readBuff.Bytes;
+            int bodyLength = BitConverter.ToInt32(bytes, readIdx);
+            //判断接收到的信息长度是否小于包体长度+包体头长度，如果小于，则代表我们的信息不全，大于代表信息全了（有可能有粘包存在）
+            if(readBuff.Length < bodyLength + 4)
+            {
+                return;
+            }
+            readBuff.ReadIdx += 4;
+            //解析协议名
+            int nameCount = 0;
+            ProtocolEnum proto = ProtocolEnum.None;
+            try
+            {
+                proto = MsgBase.DecodeName(readBuff.Bytes, readBuff.ReadIdx, out nameCount);
+            }
+            catch (SocketException ex)
+            {
+                Debug.LogError("解析协议名出错：" + ex);
+                CloseClient(clientSocket);
+                return;
+            }
             //如果信息长度不够，我们需要再次读取信息
             //OnReceiveData(clientSocket);
         }
 
+        /// <summary>
+        /// 发送数据
+        /// </summary>
+        /// <param name="cs"></param>
+        /// <param name="msgBase"></param>
         public static void Send(ClientSocket cs, MsgBase msgBase)
         {
             if(cs == null || !cs.Socket.Connected)
