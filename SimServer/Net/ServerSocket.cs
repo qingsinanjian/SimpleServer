@@ -196,8 +196,45 @@ namespace SimServer.Net
                 CloseClient(clientSocket);
                 return;
             }
-            //如果信息长度不够，我们需要再次读取信息
-            //OnReceiveData(clientSocket);
+
+            if(proto == ProtocolEnum.None)
+            {
+                Debug.LogError("OnReceiveData MsgBase.DecodeName fail");
+                CloseClient(clientSocket);
+                return;
+            }
+
+            readBuff.ReadIdx += nameCount;
+
+            //解析协议体
+            int bodyCount = bodyLength - nameCount;
+            MsgBase msgBase = null;
+            try
+            {
+                msgBase = MsgBase.Decode(proto, readBuff.Bytes, readBuff.ReadIdx, bodyCount);
+                if(msgBase == null)
+                {
+                    Debug.LogError("{0}协议内容解析错误：" + proto.ToString());
+                    CloseClient(clientSocket);
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("接收数据协议内容解析错误：" + ex);
+                CloseClient(clientSocket);
+                return;
+            }
+
+            readBuff.ReadIdx += bodyCount;
+            readBuff.CheckAndMoveBytes();
+            //分发消息
+
+            //继续读取消息
+            if(readBuff.Length > 4)
+            {
+                OnReceiveData(clientSocket);
+            }
         }
 
         /// <summary>
