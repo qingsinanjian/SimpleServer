@@ -169,6 +169,39 @@ namespace SimServer.Net
             //OnReceiveData(clientSocket);
         }
 
+        public static void Send(ClientSocket cs, MsgBase msgBase)
+        {
+            if(cs == null || !cs.Socket.Connected)
+            {
+                return;
+            }
+
+            try
+            {
+                //分为三部分，头：总协议长度；名字；协议内容.
+                byte[] nameBytes = MsgBase.EncodeName(msgBase);
+                byte[] bodyBytes = MsgBase.Encode(msgBase);
+                int len = nameBytes.Length + bodyBytes.Length;
+                byte[] byteHead = BitConverter.GetBytes(len);
+                byte[] sendBytes = new byte[byteHead.Length + len];
+                Array.Copy(byteHead, 0, sendBytes, 0, byteHead.Length);
+                Array.Copy(nameBytes, 0, sendBytes, byteHead.Length, nameBytes.Length);
+                Array.Copy(bodyBytes, 0, sendBytes, byteHead.Length + nameBytes.Length, bodyBytes.Length);
+                try
+                {
+                    cs.Socket.BeginSend(sendBytes, 0, sendBytes.Length, 0, null, null);
+                }
+                catch (SocketException ex)
+                {
+                    Debug.LogError("Socket BeginSend Error:" + ex);
+                }
+            }
+            catch (SocketException ex)
+            {
+                Debug.LogError("Socket发送数据失败：" + ex);
+            }
+        }
+
         public void CloseClient(ClientSocket client)
         {
             client.Socket.Close();
